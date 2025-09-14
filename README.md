@@ -1,4 +1,4 @@
-
+_A wellmade/helpful readme made posible by Github Copilot_
 # 🔧 Pit Tracker
 
 ## Project Overview
@@ -14,7 +14,6 @@ With features like email-based authentication, admin controls, and a modern dark
 
 ---
 
-![Pit Tracker Screenshot](screenshot.png)
 
 ## 🚀 Features
 
