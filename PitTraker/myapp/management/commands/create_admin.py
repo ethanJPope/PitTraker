@@ -9,11 +9,11 @@ class Command(BaseCommand):
     help = "Create admin user"
 
     def handle(self, *args, **options):
-        if not User.objects.filter(email="ethan.j.pope09@gmail.com").exists():
+        if not User.objects.filter(username="admin").exists():
             User.objects.create_user(
                 username="admin",
-                email="ethan.j.pope09@gmail.com",
-                password="Ethan-2009",
+                email="admin@example.com",
+                password="changeme123",
                 is_staff=True,
                 is_superuser=True,
             )

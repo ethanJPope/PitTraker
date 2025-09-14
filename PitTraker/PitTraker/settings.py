@@ -15,7 +15,7 @@ SECRET_KEY = os.environ.get(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DJANGO_DEBUG", "True").lower() == "true"
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,pit.plasma2403.com").split(",")
 
 # Application definition
 INSTALLED_APPS = [
@@ -101,6 +101,13 @@ if not DEBUG:
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = "DENY"
+
+# CSRF trusted origins for production
+CSRF_TRUSTED_ORIGINS = [
+    "https://pit.plasma2403.com",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
