@@ -1,6 +1,18 @@
+
 # 🔧 Pit Tracker
 
-A Django-based tool management system for robotics teams to track loaned tools and equipment.
+## Project Overview
+
+Pit Tracker is a Django-based tool management system designed for robotics teams and similar organizations to efficiently track, manage, and control the loaning of tools and equipment. The platform provides a secure, user-friendly interface for both regular users and administrators, allowing teams to:
+
+- Record and monitor which tools are checked out and by whom
+- Manage user accounts and permissions
+- View real-time statistics on tool usage and active loans
+- Ensure accountability and reduce tool loss or misplacement
+
+With features like email-based authentication, admin controls, and a modern dark theme, Pit Tracker streamlines tool management in fast-paced environments such as robotics competitions, workshops, or school labs.
+
+---
 
 ![Pit Tracker Screenshot](screenshot.png)
 
