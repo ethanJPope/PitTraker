@@ -240,19 +240,16 @@ sudo supervisorctl restart pittracker
 
 - macOS 10.15+ (Catalina or newer)
 - Homebrew package manager
-- Xcode Command Line Tools
+- Python 3.11+
 
 ### 1. Install Dependencies
 
 ```bash
-# Install Xcode Command Line Tools
-xcode-select --install
-
 # Install Homebrew (if not already installed)
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 # Install required packages
-brew install python@3.11 postgresql nginx git
+brew install python@3.11 postgresql git
 brew services start postgresql
 ```
 
@@ -263,10 +260,9 @@ brew services start postgresql
 createdb pittracker_db
 psql pittracker_db -c "CREATE USER pittracker_user WITH PASSWORD 'your_secure_password';"
 psql pittracker_db -c "GRANT ALL PRIVILEGES ON DATABASE pittracker_db TO pittracker_user;"
-psql pittracker_db -c "ALTER USER pittracker_user CREATEDB;"
 ```
 
-### 3. Application Deployment
+### 3. Application Setup
 
 ```bash
 # Clone repository
@@ -287,147 +283,90 @@ cp .env.example .env
 
 ### 4. Environment Configuration
 
-Edit the `.env` file with production values:
+Edit the `.env` file:
 
 ```bash
 DEBUG=False
 SECRET_KEY=your_very_secure_secret_key_here
 DATABASE_URL=postgresql://pittracker_user:your_secure_password@localhost:5432/pittracker_db
-ALLOWED_HOSTS=your-domain.com,www.your-domain.com,localhost,127.0.0.1
+ALLOWED_HOSTS=localhost,127.0.0.1,your-domain.com
 ```
 
-### 5. Database Migration & Static Files
+### 5. Database Setup
 
 ```bash
 # Run migrations
 python manage.py migrate
 
-# Collect static files
-python manage.py collectstatic --noinput
-
 # Create superuser
 python manage.py createsuperuser
+
+# Collect static files
+python manage.py collectstatic --noinput
 ```
 
-### 6. Gunicorn Configuration
+### 6. Start the Server
 
-Create `gunicorn.conf.py` in the project root:
+gunicorn --bind 0.0.0.0:8000 PitTraker.wsgi:application
 
-```python
-bind = "127.0.0.1:8000"
-workers = 2
-timeout = 120
-keepalive = 5
-max_requests = 1000
-max_requests_jitter = 100
-```
+# Alternative: Use Django's built-in server for production
 
-### 7. Launch Agent Configuration (macOS Service)
+python manage.py runserver 0.0.0.0:8000
 
-Create `~/Library/LaunchAgents/com.pittracker.plist`:
+````
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>Label</key>
-    <string>com.pittracker</string>
-    <key>ProgramArguments</key>
-    <array>
-        <string>/path/to/PitTraker/venv/bin/gunicorn</string>
-        <string>--config</string>
-        <string>/path/to/PitTraker/gunicorn.conf.py</string>
-        <string>pit_tracker.wsgi:application</string>
-    </array>
-    <key>WorkingDirectory</key>
-    <string>/path/to/PitTraker</string>
-    <key>RunAtLoad</key>
-    <true/>
-    <key>KeepAlive</key>
-    <true/>
-    <key>StandardOutPath</key>
-    <string>/usr/local/var/log/pittracker.log</string>
-    <key>StandardErrorPath</key>
-    <string>/usr/local/var/log/pittracker.log</string>
-</dict>
-</plist>
-```
+### 🔧 Troubleshooting
 
-Replace `/path/to/PitTraker` with your actual project path.
+If you get `ModuleNotFoundError`, try these steps:
 
-### 8. Nginx Configuration
+1. **Check project structure:**
+   ```bash
+   # List all Python files to identify the main project directory
+   find . -name "*.py" | head -10
+````
 
-Create `/usr/local/etc/nginx/servers/pittracker.conf`:
+2. **Find settings.py location:**
 
-```nginx
-server {
-    listen 80;
-    server_name localhost your-domain.com;
+   ```bash
+   find . -name "settings.py" -type f
+   ```
 
-    location /static/ {
-        alias /path/to/PitTraker/staticfiles/;
-        expires 30d;
-        add_header Cache-Control "public, immutable";
-    }
+3. **Use the directory name containing settings.py:**
 
-    location /media/ {
-        alias /path/to/PitTraker/media/;
-    }
+   ```bash
+   # If settings.py is in ./myproject/settings.py, use:
+   gunicorn --bind 0.0.0.0:8000 myproject.wsgi:application
+   ```
 
-    location / {
-        proxy_pass http://127.0.0.1:8000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-}
-```
+4. **Alternative: Use Django development server:**
+   ```bash
+   python manage.py runserver 0.0.0.0:8000
+   ```
 
-Replace `/path/to/PitTraker` with your actual project path.
+The server will be available at `http://localhost:8000`
 
-### 9. Start Services
+### 🔄 Development Mode
+
+For development with auto-reload:
 
 ```bash
-# Load and start the launch agent
-launchctl load ~/Library/LaunchAgents/com.pittracker.plist
-launchctl start com.pittracker
+# Activate virtual environment
+source venv/bin/activate
 
-# Test nginx configuration and start
-sudo nginx -t
-brew services start nginx
+# Run development server
+python manage.py runserver 0.0.0.0:8000
 ```
 
-### 10. SSL Certificate (Optional for Local Development)
-
-For local development with HTTPS:
-
-```bash
-# Install mkcert for local SSL certificates
-brew install mkcert
-mkcert -install
-
-# Generate certificate for localhost
-mkcert localhost 127.0.0.1
-
-# Update nginx configuration to use SSL
-```
-
-### 🔄 Updates and Maintenance (macOS)
-
-To update the application:
+### 🔄 Updates and Maintenance
 
 ```bash
 cd PitTraker
+source venv/bin/activate
 
 # Pull latest changes
 git pull origin main
 
-# Activate virtual environment
-source venv/bin/activate
-
-# Install any new dependencies
+# Install dependencies
 pip install -r requirements.txt
 
 # Run migrations
@@ -436,9 +375,8 @@ python manage.py migrate
 # Collect static files
 python manage.py collectstatic --noinput
 
-# Restart application
-launchctl stop com.pittracker
-launchctl start com.pittracker
+# Restart server
+gunicorn --bind 0.0.0.0:8000 pit_tracker.wsgi:application
 ```
 
 ### 🔒 Security Considerations (macOS)
