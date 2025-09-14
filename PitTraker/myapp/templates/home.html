@@ -1,4 +1,137 @@
-{% extends "base.html" %} {% block title %} Home - My Django App {% endblock %}
+<!-- PitTraker/myapp/templates/home.html -->
+{% extends "base.html" %}
+
+{% block title %}Home - Pit Tracker{% endblock %}
+
 {% block content %}
-<p>This is the home page</p>
+<style>
+    .welcome-section {
+        text-align: center;
+        padding: 48px 0;
+        max-width: 800px;
+        margin: 0 auto;
+        border: 2px solid #2d2d44;
+        border-radius: 8px;
+        padding: 48px 32px;
+        background: #0f0f23;
+        margin-bottom: 48px;
+    }
+    
+    .welcome-section h2 {
+        color: #e2e8f0;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 16px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .welcome-section p {
+        color: #94a3b8;
+        font-size: 1.125rem;
+        margin-bottom: 32px;
+        line-height: 1.6;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 24px;
+    }
+    
+    .feature-card {
+        background: #1a1a2e;
+        border: 2px solid #2d2d44;
+        border-radius: 8px;
+        padding: 32px 24px;
+        text-align: center;
+        transition: all 0.2s ease;
+    }
+    
+    .feature-card:hover {
+        border-color: #8b5cf6;
+        background: #0f0f23;
+    }
+    
+    .feature-card h3 {
+        color: #8b5cf6;
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 16px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .feature-card p {
+        color: #94a3b8;
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+    
+    .hero-icon {
+        width: 120px;
+        height: 120px;
+        background: #8b5cf6;
+        border: 3px solid #2d2d44;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px;
+        font-size: 3rem;
+        color: #ffffff;
+    }
+    
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+        background: #8b5cf6;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+        font-size: 24px;
+        color: #ffffff;
+    }
+</style>
+
+<div class="welcome-section">
+    <h2>Welcome to my Pit Tracker!</h2>
+    <p>A website to track what tools we have loaned to teams at our robotics competitions.</p>
+    
+    <div class="action-buttons">
+        <a href="{% url 'loaned_tools' %}" class="btn">
+           View Tools
+        </a>
+        <a href="{% url 'add_tool_loan' %}" class="btn btn-success">
+            + Add Loan
+        </a>
+    </div>
+</div>
+
+<div class="feature-grid">
+    <div class="feature-card">
+        <div class="feature-icon">🔧</div>
+        <h3>Track Tools</h3>
+        <p>Keep a comprehensive record of which tools you've loaned to which teams with detailed descriptions and timestamps.</p>
+    </div>
+    <div class="feature-card">
+        <div class="feature-icon">👥</div>
+        <h3>Team Management</h3>
+        <p>Easily see which teams currently have your tools and manage returns with our simple interface.</p>
+    </div>
+    <div class="feature-card">
+        <div class="feature-icon">✅</div>
+        <h3>Return Tracking</h3>
+        <p>Mark tools as returned when teams bring them back and keep track of loan durations automatically.</p>
+    </div>
+</div>
 {% endblock %}

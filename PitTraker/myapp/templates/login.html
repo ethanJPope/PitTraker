@@ -1,0 +1,73 @@
+<!-- PitTraker/myapp/templates/login.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            background: #222; 
+            color: white; 
+            padding: 50px; 
+        }
+        .login-container { 
+            max-width: 400px; 
+            margin: 0 auto; 
+            background: #333; 
+            padding: 30px; 
+            border-radius: 8px; 
+        }
+        input { 
+            width: 100%; 
+            padding: 12px; 
+            margin: 8px 0; 
+            box-sizing: border-box; 
+            border: 1px solid #555; 
+            background: #444; 
+            color: white; 
+        }
+        button { 
+            width: 100%; 
+            padding: 12px; 
+            background: #8b5cf6; 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+        }
+        .error { background: #ff6b6b; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>Pit Tracker Login</h1>
+        
+        {% if form.non_field_errors %}
+            <div class="error">
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <label>Email:</label>
+            {{ form.email }}
+            {% if form.email.errors %}
+                <div class="error">{{ form.email.errors.0 }}</div>
+            {% endif %}
+            
+            <label>Password:</label>
+            {{ form.password }}
+            {% if form.password.errors %}
+                <div class="error">{{ form.password.errors.0 }}</div>
+            {% endif %}
+            
+            <button type="submit">Login</button>
+        </form>
+        
+        <p>Test with: ethan.j.pope09@gmail.com / Ethan-2009</p>
+    </div>
+</body>
+</html>

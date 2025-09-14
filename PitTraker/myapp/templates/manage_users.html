@@ -1,0 +1,207 @@
+<!-- PitTraker/myapp/templates/manage_users.html -->
+{% extends "base.html" %}
+
+{% block title %}Manage Users - Pit Tracker{% endblock %}
+
+{% block content %}
+<style>
+    .users-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 32px;
+        flex-wrap: wrap;
+        gap: 16px;
+        padding-bottom: 24px;
+        border-bottom: 2px solid #2d2d44;
+    }
+    
+    .users-header h2 {
+        color: #8b5cf6;
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .header-icon {
+        width: 32px;
+        height: 32px;
+        background: #8b5cf6;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        font-size: 18px;
+    }
+    
+    .user-item {
+        background: #1a1a2e;
+        border: 2px solid #2d2d44;
+        border-radius: 8px;
+        padding: 24px;
+        margin-bottom: 16px;
+        transition: all 0.2s ease;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+    
+    .user-item:hover {
+        border-color: #8b5cf6;
+    }
+    
+    .user-details h3 {
+        color: #e2e8f0;
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+    
+    .user-details p {
+        color: #94a3b8;
+        font-size: 0.875rem;
+        margin-bottom: 4px;
+    }
+    
+    .admin-badge {
+        background: #8b5cf6;
+        color: #ffffff;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .user-badge {
+        background: #64748b;
+        color: #ffffff;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .user-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    
+    .btn-small {
+        padding: 8px 16px;
+        font-size: 12px;
+        border-radius: 4px;
+        text-decoration: none;
+        text-align: center;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border: 2px solid;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    
+    .btn-edit {
+        background: #f59e0b;
+        color: #1a1a2e;
+        border-color: #f59e0b;
+    }
+    
+    .btn-edit:hover {
+        background: #1a1a2e;
+        color: #f59e0b;
+        border-color: #f59e0b;
+    }
+    
+    .btn-danger {
+        background: #ef4444;
+        border-color: #ef4444;
+        color: #ffffff;
+    }
+    
+    .btn-danger:hover {
+        background: #1a1a2e;
+        color: #ef4444;
+        border-color: #ef4444;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 80px 32px;
+        border: 2px dashed #2d2d44;
+        border-radius: 8px;
+        background: #0f0f23;
+    }
+    
+    .empty-state h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #8b5cf6;
+        margin-bottom: 16px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+</style>
+
+<div class="users-header">
+    <h2>
+        <div class="header-icon">👥</div>
+        Manage Users
+    </h2>
+    <a href="{% url 'create_user' %}" class="btn btn-success">
+        ➕ Create User
+    </a>
+</div>
+
+{% if users %}
+    {% for user in users %}
+        <div class="user-item">
+            <div class="user-details">
+                <h3>{{ user.username }}</h3>
+                <p>{{ user.email }} • 
+                    {% if user.is_staff %}
+                        <span class="admin-badge">Admin</span>
+                    {% else %}
+                        <span class="user-badge">User</span>
+                    {% endif %}
+                    • Joined {{ user.date_joined|date:"M d, Y" }}
+                </p>
+            </div>
+            
+            <div class="user-actions">
+                <a href="{% url 'edit_user' user.id %}" class="btn-edit btn-small">
+                    ✏️ Edit
+                </a>
+                {% if user != request.user %}
+                    <form method="post" action="{% url 'delete_user' user.id %}" style="margin: 0;" 
+                          onsubmit="return confirm('Are you sure you want to delete {{ user.username }}?')">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-small">
+                            🗑️ Delete
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="empty-state">
+        <h3>No Users Found</h3>
+        <a href="{% url 'create_user' %}" class="btn btn-success">Create First User</a>
+    </div>
+{% endif %}
+{% endblock %}

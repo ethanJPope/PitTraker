@@ -1,0 +1,343 @@
+<!-- PitTraker/myapp/templates/loaned_tools.html -->
+{% extends "base.html" %}
+
+{% block title %}Loaned Tools - Pit Tracker{% endblock %}
+
+{% block content %}
+<style>
+    .tools-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 32px;
+        flex-wrap: wrap;
+        gap: 16px;
+        padding-bottom: 24px;
+        border-bottom: 2px solid #2d2d44;
+    }
+    
+    .tools-header h2 {
+        color: #8b5cf6;
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .header-icon {
+        width: 32px;
+        height: 32px;
+        background: #8b5cf6;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        font-size: 18px;
+    }
+    
+    .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 16px;
+        margin-bottom: 32px;
+    }
+    
+    .stat-card {
+        background: #0f0f23;
+        border: 2px solid #2d2d44;
+        border-radius: 8px;
+        padding: 24px;
+        text-align: center;
+        transition: all 0.2s ease;
+    }
+    
+    .stat-card:hover {
+        border-color: #8b5cf6;
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #8b5cf6;
+        display: block;
+        margin-bottom: 8px;
+        font-family: 'Courier New', monospace;
+    }
+    
+    .stat-card.active .stat-number {
+        color: #ef4444;
+    }
+    
+    .stat-card.returned .stat-number {
+        color: #10b981;
+    }
+    
+    .stat-label {
+        font-size: 0.875rem;
+        color: #94a3b8;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .tool-item {
+        background: #1a1a2e;
+        border: 2px solid #2d2d44;
+        border-radius: 8px;
+        padding: 24px;
+        margin-bottom: 16px;
+        transition: all 0.2s ease;
+        border-left: 6px solid #ef4444;
+    }
+    
+    .tool-item:hover {
+        border-color: #8b5cf6;
+        border-left-color: #8b5cf6;
+    }
+    
+    .tool-item.returned {
+        border-left-color: #10b981;
+        background: #0d1f17;
+    }
+    
+    .tool-item.returned:hover {
+        border-left-color: #10b981;
+    }
+    
+    .tool-item.returned .tool-title {
+        text-decoration: line-through;
+        color: #64748b;
+    }
+    
+    .tool-content {
+        display: flex;
+        align-items: flex-start;
+        gap: 20px;
+    }
+    
+    .tool-checkbox {
+        width: 20px;
+        height: 20px;
+        margin-top: 4px;
+        cursor: pointer;
+        accent-color: #10b981;
+        border: 2px solid #2d2d44;
+    }
+    
+    .tool-details {
+        flex: 1;
+    }
+    
+    .tool-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .team-number {
+        color: #8b5cf6;
+        font-weight: 700;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+        font-family: 'Courier New', monospace;
+        border: 1px solid #8b5cf6;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 8px;
+        border-radius: 4px;
+        background: #0f0f23;
+    }
+    
+    .team-icon {
+        width: 16px;
+        height: 16px;
+        background: #8b5cf6;
+        border-radius: 3px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        font-size: 10px;
+    }
+    
+    .tool-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #e2e8f0;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .tool-description {
+        color: #94a3b8;
+        line-height: 1.6;
+        margin-bottom: 12px;
+        font-style: italic;
+    }
+    
+    .tool-meta {
+        font-size: 0.875rem;
+        color: #64748b;
+        font-family: 'Courier New', monospace;
+        background: #0f0f23;
+        padding: 8px;
+        border: 1px solid #2d2d44;
+        border-radius: 4px;
+    }
+    
+    .btn-small {
+        padding: 8px 16px;
+        font-size: 12px;
+        border-radius: 4px;
+        text-decoration: none;
+        text-align: center;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border: 2px solid;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .btn-edit {
+        background: #f59e0b;
+        color: #1a1a2e;
+        border-color: #f59e0b;
+    }
+    
+    .btn-edit:hover {
+        background: #1a1a2e;
+        color: #f59e0b;
+        border-color: #f59e0b;
+    }
+    
+    .edit-icon {
+        width: 12px;
+        height: 12px;
+        background: currentColor;
+        border-radius: 2px;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 80px 32px;
+        border: 2px dashed #2d2d44;
+        border-radius: 8px;
+        background: #0f0f23;
+    }
+    
+    .empty-state h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #8b5cf6;
+        margin-bottom: 16px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .empty-state p {
+        margin-bottom: 32px;
+        font-size: 1.125rem;
+        color: #94a3b8;
+    }
+    
+    .empty-icon {
+        width: 120px;
+        height: 120px;
+        border: 3px dashed #2d2d44;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px;
+        background: #1a1a2e;
+        font-size: 3rem;
+        color: #64748b;
+    }
+</style>
+
+<div class="tools-header">
+    <h2>
+        Loaned Tools
+    </h2>
+    <a href="{% url 'add_tool_loan' %}" class="btn btn-success">
+        + Add Loan
+    </a>
+</div>
+
+{% if tools %}
+    <div class="stats">
+        <div class="stat-card">
+            <span class="stat-number">{{ total_count }}</span>
+            <div class="stat-label">Total</div>
+        </div>
+        <div class="stat-card active">
+            <span class="stat-number">{{ active_count }}</span>
+            <div class="stat-label">Out</div>
+        </div>
+        <div class="stat-card returned">
+            <span class="stat-number">{{ returned_count }}</span>
+            <div class="stat-label">Returned</div>
+        </div>
+    </div>
+    
+    <div class="tools-list">
+        {% for tool in tools %}
+            <div class="tool-item {% if tool.returned %}returned{% endif %}">
+                <div class="tool-content">
+                    <form method="post" action="{% url 'return_tool' tool.id %}" style="margin: 0;">
+                        {% csrf_token %}
+                        <input type="checkbox" 
+                               name="returned" 
+                               class="tool-checkbox"
+                               {% if tool.returned %}checked{% endif %} 
+                               onchange="this.form.submit()">
+                    </form>
+                    
+                    <div class="tool-details">
+                        <div class="team-number">
+                            <div class="team-icon">👥</div>
+                            Team {{ tool.team_number }}
+                        </div>
+                        <div class="tool-title">{{ tool.tool_name }}</div>
+                        {% if tool.description %}
+                            <div class="tool-description">{{ tool.description }}</div>
+                        {% endif %}
+                        <div class="tool-meta">
+                            LOANED: {{ tool.date_loaned|date:"M d, Y g:i A" }}
+                            {% if tool.returned and tool.date_returned %}
+                                | RETURNED: {{ tool.date_returned|date:"M d, Y g:i A" }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="tool-actions">
+                        <a href="{% url 'edit_tool_loan' tool.id %}" class="btn-edit btn-small">
+                            <div class="edit-icon"></div>
+                            Edit
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="empty-state">
+        <div class="empty-icon">🔧</div>
+        <h3>No Tools Loaned</h3>
+        <p>Start tracking your tool loans by recording your first loan.</p>
+        <a href="{% url 'add_tool_loan' %}" class="btn btn-success">Record First Loan</a>
+    </div>
+{% endif %}
+{% endblock %}

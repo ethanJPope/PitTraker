@@ -1,0 +1,204 @@
+<!-- PitTraker/myapp/templates/tool_loan_form.html -->
+{% extends "base.html" %}
+
+{% block title %}{{ action }} Tool Loan - Pit Tracker{% endblock %}
+
+{% block content %}
+<style>
+    .form-container {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .form-header {
+        text-align: center;
+        margin-bottom: 40px;
+        padding: 32px;
+        border: 2px solid #2d2d44;
+        border-radius: 8px;
+        background: #0f0f23;
+    }
+    
+    .form-header h2 {
+        color: #8b5cf6;
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .form-header p {
+        color: #94a3b8;
+        font-size: 1.125rem;
+        line-height: 1.6;
+    }
+    
+    .edit-info {
+        background: #1f1611;
+        border: 2px solid #f59e0b;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 32px;
+        text-align: center;
+    }
+    
+    .edit-info h4 {
+        color: #f59e0b;
+        font-weight: 600;
+        margin-bottom: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .edit-info p {
+        color: #d97706;
+        margin: 0;
+        font-size: 0.875rem;
+        font-family: 'Courier New', monospace;
+    }
+    
+    .form-group {
+        margin-bottom: 24px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #8b5cf6;
+        font-weight: 600;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .form-group input,
+    .form-group textarea {
+        width: 100%;
+        padding: 16px;
+        border: 2px solid #2d2d44;
+        border-radius: 4px;
+        font-size: 16px;
+        font-family: inherit;
+        transition: all 0.2s ease;
+        background: #1a1a2e;
+        color: #e2e8f0;
+    }
+    
+    .form-group input:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #8b5cf6;
+        background: #0f0f23;
+    }
+    
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+        color: #64748b;
+    }
+    
+    .form-group textarea {
+        resize: vertical;
+        min-height: 100px;
+        line-height: 1.6;
+        font-family: inherit;
+    }
+    
+    .form-actions {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 40px;
+        padding-top: 32px;
+        border-top: 2px solid #2d2d44;
+    }
+    
+    .btn-cancel {
+        background: #64748b;
+        border-color: #64748b;
+        color: #ffffff;
+    }
+    
+    .btn-cancel:hover {
+        background: #1a1a2e;
+        color: #64748b;
+        border-color: #64748b;
+    }
+    
+    .form-icon {
+        width: 80px;
+        height: 80px;
+        background: #8b5cf6;
+        border: 3px solid #2d2d44;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+        font-size: 2rem;
+        color: #ffffff;
+    }
+</style>
+
+<div class="form-container">
+    <div class="form-header">
+        <div class="form-icon">
+            {% if action == "Edit" %}✏️{% else %}📝{% endif %}
+        </div>
+        <h2>
+            {% if action == "Edit" %}
+                Edit Tool Loan
+            {% else %}
+                Record Tool Loan
+            {% endif %}
+        </h2>
+        <p>
+            {% if action == "Edit" %}
+                Update the details for this tool loan
+            {% else %}
+                Track which team borrowed what tool
+            {% endif %}
+        </p>
+    </div>
+
+    {% if action == "Edit" and tool %}
+        <div class="edit-info">
+            <h4>Editing Loan for Team {{ tool.team_number }}</h4>
+            <p>ORIGINALLY LOANED: {{ tool.date_loaned|date:"M d, Y g:i A" }}</p>
+        </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="{{ form.team_number.id_for_label }}">Team Number *</label>
+            {{ form.team_number }}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.tool_name.id_for_label }}">Tool Name *</label>
+            {{ form.tool_name }}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.description.id_for_label }}">Description</label>
+            {{ form.description }}
+        </div>
+        
+        <div class="form-actions">
+            {% if action == "Edit" %}
+                <button type="submit" class="btn btn-warning">
+                    💾 Update
+                </button>
+            {% else %}
+                <button type="submit" class="btn btn-success">
+                    Record
+                </button>
+            {% endif %}
+            <a href="{% url 'loaned_tools' %}" class="btn btn-cancel">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
