@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.utils import timezone
+from django.contrib.auth.forms import UserCreationForm
 from .models import LoanedTool, CustomUser
 from .forms import LoanedToolForm, LoginForm, CustomUserCreationForm, UserEditForm
 
@@ -110,19 +111,17 @@ def manage_users(request):
 @user_passes_test(is_admin)
 def create_user(request):
     if request.method == "POST":
-        form = CustomUserCreationForm(request.POST)
+        form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            admin_status = (
-                "with admin privileges" if user.is_staff else "without admin privileges"
-            )
             messages.success(
-                request, f"User {user.username} created successfully {admin_status}!"
+                request, f"User {user.username} has been created successfully."
             )
             return redirect("manage_users")
     else:
-        form = CustomUserCreationForm()
-    return render(request, "create_user.html", {"form": form, "action": "Create"})
+        form = UserCreationForm()
+
+    return render(request, "create_user.html", {"form": form})
 
 
 @user_passes_test(is_admin)
